@@ -8,20 +8,6 @@ Raw data from CRM and ERP systems is ingested, cleaned, and transformed into a c
 
 ---
 
-## 👨‍💻 About Me
-
-I am a data engineering enthusiast focused on building scalable data solutions and improving my skills in **data modeling, ETL processes, and SQL development**.
-
-This project represents a hands-on implementation of:
-
-* End-to-end data warehouse design
-* Data integration from multiple systems
-* Transforming raw data into business-ready insights
-
-It reflects how real-world data pipelines are built to support **analytics, reporting, and decision-making**.
-
----
-
 ## 🏗 Architecture
 
 ![Data Warehouse Architecture](./docs/High%20Level%20Architecture.png)
@@ -99,5 +85,19 @@ The Gold layer is structured as a **star schema**:
 * The Gold layer represents a **business-oriented data mart**
 * The architecture ensures **scalability and maintainability**
 * The model is optimized for **BI tools and analytical workloads**
+
+---
+
+## 👨‍💻 About Me
+
+I am a data engineering enthusiast focused on building scalable data solutions and improving my skills in **data modeling, ETL processes, and SQL development**.
+
+This project represents a hands-on implementation of:
+
+* End-to-end data warehouse design
+* Data integration from multiple systems
+* Transforming raw data into business-ready insights
+
+It reflects how real-world data pipelines are built to support **analytics, reporting, and decision-making**.
 
 ---
