@@ -27,123 +27,6 @@ The ERP system enriches CRM data with additional details:
 
 ---
 
-## 🥉 Bronze Layer (Raw Data)
-
-### Description
-The Bronze layer stores raw data ingested from CRM and ERP systems without transformations.
-
----
-
-### Table: `crm_customer_info`
-**Description:** Raw customer data from CRM system
-
-| Column Name | Data Type | Description |
-|------------|----------|------------|
-| customer_id | INT | Unique identifier for customer |
-| customer_key | NVARCHAR | Business key from source system |
-| customer_firstname | NVARCHAR | Customer first name |
-| customer_lastname | NVARCHAR | Customer last name |
-| customer_marital_status | NVARCHAR | Marital status |
-| customer_gender | NVARCHAR | Gender |
-| customer_create_date | DATE | Record creation date |
-
----
-
-### Table: `crm_product_info`
-**Description:** Raw product data from CRM system
-
-| Column Name | Data Type | Description |
-|------------|----------|------------|
-| product_id | INT | Unique product identifier |
-| product_name | NVARCHAR | Product name |
-| product_category | NVARCHAR | Product category |
-| product_subcategory | NVARCHAR | Product subcategory |
-
----
-
-### Table: `crm_sales_details`
-**Description:** Raw sales transactions from CRM system
-
-| Column Name | Data Type | Description |
-|------------|----------|------------|
-| sales_id | INT | Unique sales transaction ID |
-| customer_id | INT | Customer reference |
-| product_id | INT | Product reference |
-| sales_amount | DECIMAL | Total transaction value |
-| sales_date | DATE | Date of sale |
-| sales_due_date | DATE | Expected completion/payment date |
-
----
-
-### Table: `erp_customer_details`
-**Description:** Additional customer attributes from ERP system
-
-| Column Name | Data Type | Description |
-|------------|----------|------------|
-| customer_id | INT | Customer identifier |
-| additional_attributes | NVARCHAR | Extra customer details |
-
----
-
-### Table: `erp_product_details`
-**Description:** Additional product attributes from ERP system
-
-| Column Name | Data Type | Description |
-|------------|----------|------------|
-| product_id | INT | Product identifier |
-| additional_attributes | NVARCHAR | Extra product details |
-
----
-
-## 🥈 Silver Layer (Cleaned & Standardized)
-
-### Description
-The Silver layer transforms and cleans raw data:
-- Removes duplicates
-- Standardizes formats
-- Resolves inconsistencies
-- Integrates CRM and ERP data
-
----
-
-### Table: `dim_customers`
-**Description:** Consolidated and cleaned customer dimension
-
-| Column Name | Data Type | Description |
-|------------|----------|------------|
-| customer_id | INT | Unique customer identifier |
-| full_name | NVARCHAR | Customer full name |
-| gender | NVARCHAR | Standardized gender |
-| marital_status | NVARCHAR | Standardized marital status |
-| create_date | DATE | Customer creation date |
-
----
-
-### Table: `dim_products`
-**Description:** Consolidated and enriched product dimension
-
-| Column Name | Data Type | Description |
-|------------|----------|------------|
-| product_id | INT | Unique product identifier |
-| product_name | NVARCHAR | Product name |
-| category | NVARCHAR | Product category |
-| subcategory | NVARCHAR | Product subcategory |
-
----
-
-### Table: `fact_sales_clean`
-**Description:** Cleaned and validated sales transactions
-
-| Column Name | Data Type | Description |
-|------------|----------|------------|
-| sales_id | INT | Unique sales ID |
-| customer_id | INT | Reference to customer |
-| product_id | INT | Reference to product |
-| sales_amount | DECIMAL | Transaction value |
-| sales_date | DATE | Date of transaction |
-
----
-
 ## 🥇 Gold Layer (Business-Ready – Star Schema)
 
 ### Description
@@ -156,11 +39,15 @@ The Gold layer contains analytics-ready data modeled as a **star schema**.
 
 | Column Name | Data Type | Description |
 |------------|----------|------------|
-| sales_id | INT | Unique sales identifier |
-| customer_id | INT | Foreign key to dim_customers |
-| product_id | INT | Foreign key to dim_products |
-| sales_amount | DECIMAL | Total sales value |
-| sales_date | DATE | Date of sale |
+| order_number |	NVARCHAR(50) |	A unique alphanumeric identifier for each sales order (e.g., 'SO54496') |
+| product_key |	INT |	Surrogate key linking the order to the product dimension table |
+| customer_key |	INT |	Surrogate key linking the order to the customer dimension table |
+| order_date |	DATE |	The date when the order was placed |
+| shipping_date |	DATE |	The date when the order was shipped to the customer |
+| due_date |	DATE |	The date when the order payment was due |
+| price |	INT |	The price per unit of the product for the line item, in whole currency units (e.g., 25) |
+| quantity | INT |	The number of units of the product ordered for the line item (e.g., 1) |
+| sales_amount | INT |	The total monetary value of the sale for the line item, in whole currency units (e.g., 25) |
 
 ---
 
@@ -169,11 +56,16 @@ The Gold layer contains analytics-ready data modeled as a **star schema**.
 
 | Column Name | Data Type | Description |
 |------------|----------|------------|
-| customer_id | INT | Primary key |
-| full_name | NVARCHAR | Customer full name |
-| gender | NVARCHAR | Gender |
-| marital_status | NVARCHAR | Marital status |
-
+| customer_key | INT | Surrogate key |
+| customer_id | INT | Unique identifier for each customer |
+| customer_number | NVARCHAR | Alphanumeric identifier representing the customer, used for tracking and referencing |
+| first_name | NVARCHAR | Customer's first name |
+| last_name | NVARCHAR | Customer's last name |
+| country | NVARCHAR | Customer's country (e.g., 'Australia') |
+| marital_status | NVARCHAR | Customer's marital_status (e.g., 'Married', 'Single') |
+| gender | NVARCHAR | Customer's gender (e.g., 'Male', 'Female', 'Unknown') |
+| birthdate | DATE | Customer's birthdate formatted as YYYY-MM-DD (e.g., 1971-10-06)|
+| create_date	| DATE |	The date and time when the customer record was created in the system |
 ---
 
 ### 📘 Dimension Table: `dim_products`
@@ -181,17 +73,25 @@ The Gold layer contains analytics-ready data modeled as a **star schema**.
 
 | Column Name | Data Type | Description |
 |------------|----------|------------|
-| product_id | INT | Primary key |
-| product_name | NVARCHAR | Product name |
-| category | NVARCHAR | Product category |
-| subcategory | NVARCHAR | Product subcategory |
+| product_key |	INT	| Surrogate key uniquely identifying each product record in the product dimension table |
+| product_id |	INT	A unique identifier assigned to the product for internal tracking and referencing |
+| product_number |	NVARCHAR(50)	A structured alphanumeric code representing the product, often used for categorization or inventory |
+| product_name |	NVARCHAR(50)	Descriptive name of the product, including key details such as type, color, and size |
+| category_id |	NVARCHAR(50)	A unique identifier for the product's category, linking to its high-level classification |
+| category |	NVARCHAR(50)	The broader classification of the product (e.g., Bikes, Components) to group related items |
+| subcategory |	NVARCHAR(50)	A more detailed classification of the product within the category, such as product type |
+| maintenance |	NVARCHAR(50)	Indicates whether the product requires maintenance (e.g., 'Yes', 'No') |
+| cost |	INT	The cost or base price of the product, measured in monetary units |
+| product_line |	NVARCHAR(50)	The specific product line or series to which the product belongs (e.g., Road, Mountain) |
+| start_date |	DATE	The date when the product became available for sale or use, stored in | 
+
 
 ---
 
 ## 🔗 Relationships (Star Schema)
 
-- `fact_sales.customer_id` → `dim_customers.customer_id`
-- `fact_sales.product_id` → `dim_products.product_id`
+- `fact_sales.customer_key` → `dim_customers.customer_key`
+- `fact_sales.product_key` → `dim_products.product_key`
 
 ---
 
