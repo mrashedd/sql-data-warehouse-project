@@ -1,10 +1,10 @@
 /*
 Purpose:
-    This stored procedure loads the Silver layer of the data warehouse by transforming
-    and cleaning raw data from the Bronze layer. It standardizes formats, removes duplicates,
-    fixes invalid values, and ensures data consistency for downstream analytics.
+This stored procedure loads the Silver layer of the data warehouse by transforming
+and cleaning raw data from the Bronze layer. It standardizes formats, removes duplicates,
+fixes invalid values, and ensures data consistency for downstream analytics.
 
-    The procedure processes both CRM and ERP datasets and logs execution time for each step.
+The procedure processes both CRM and ERP datasets and logs execution time for each step.
 */
 
 CREATE OR ALTER PROCEDURE silver.load_silver_layer AS
@@ -41,23 +41,23 @@ BEGIN
         )
         SELECT
             customer_id,
-            TRIM(customer_key),
-            TRIM(customer_firstname),
-            TRIM(customer_lastname),
+            TRIM(customer_key) AS customer_key,
+            TRIM(customer_firstname) AS customer_firstname,
+            TRIM(customer_lastname) AS customer_lastname,
 
             -- Standardize marital status values
             CASE UPPER(TRIM(customer_marital_status))
                 WHEN 'M' THEN 'Married'
                 WHEN 'S' THEN 'Single'
                 ELSE 'Unknown'
-            END,
+            END AS customer_marital_status,
 
             -- Standardize gender values
             CASE UPPER(TRIM(customer_gender))
                 WHEN 'M' THEN 'Male'
                 WHEN 'F' THEN 'Female'
                 ELSE 'Unknown'
-            END,
+            END AS customer_gender,
 
             customer_create_date
         FROM (
@@ -103,15 +103,15 @@ BEGIN
             product_id,
 
             -- Extract product key (remove prefix)
-            SUBSTRING(TRIM(product_key), 7, LEN(product_key)),
+            SUBSTRING(TRIM(product_key), 7, LEN(product_key)) AS product_key,
 
             -- Derive category id from key
-            REPLACE(SUBSTRING(TRIM(product_key), 1, 5), '-', '_'),
+            REPLACE(SUBSTRING(TRIM(product_key), 1, 5), '-', '_') AS product_category_id,
 
-            TRIM(product_name),
+            TRIM(product_name) AS product_name,
 
             -- Replace NULL cost with 0
-            COALESCE(product_cost, '0'),
+            COALESCE(product_cost, '0') AS product_cost,
 
             -- Map product line codes to descriptive values
             CASE TRIM(UPPER(product_line))
@@ -120,7 +120,7 @@ BEGIN
                 WHEN 'T' THEN 'Touring'
                 WHEN 'S' THEN 'Other Sales'
                 ELSE 'Unknown'
-            END,
+            END AS product_line,
 
             product_start_date,
 
@@ -132,7 +132,7 @@ BEGIN
                         PARTITION BY product_key
                         ORDER BY product_start_date
                     )
-            )
+            ) AS product_end_date
         FROM bronze.crm_product_info;
 
         SET @end_date = GETDATE();
@@ -162,8 +162,8 @@ BEGIN
             sales_price
         )
         SELECT
-            TRIM(sales_order_num),
-            TRIM(sales_product_key),
+            TRIM(sales_order_num) AS sales_order_num,
+            TRIM(sales_product_key) AS sales_product_key,
             sales_customer_id,
 
             -- Validate and convert date fields from INT format (YYYYMMDD)
@@ -175,7 +175,7 @@ BEGIN
                     ) IS NOT NULL
                     THEN
                         TRY_CONVERT(DATE, CAST(sales_order_date AS VARCHAR(8)))
-            END,
+            END AS sales_order_date,
 
             CASE
                 WHEN
@@ -185,7 +185,7 @@ BEGIN
                     ) IS NOT NULL
                     THEN
                         TRY_CONVERT(DATE, CAST(sales_ship_date AS VARCHAR(8)))
-            END,
+            END AS sales_ship_date,
 
             CASE
                 WHEN
@@ -195,7 +195,7 @@ BEGIN
                     ) IS NOT NULL
                     THEN
                         TRY_CONVERT(DATE, CAST(sales_due_date AS VARCHAR(8)))
-            END,
+            END as sales_due_date,
 
             -- Fix inconsistent sales values
             CASE
@@ -205,7 +205,7 @@ BEGIN
                     OR sales_sales != sales_quantity * ABS(sales_price)
                     THEN sales_quantity * ABS(sales_price)
                 ELSE sales_sales
-            END,
+            END AS sales_sales,
 
             sales_quantity,
 
@@ -214,7 +214,7 @@ BEGIN
                 WHEN sales_price IS NULL OR sales_price <= 0
                     THEN ABS(sales_sales) / NULLIF(sales_quantity, 0)
                 ELSE sales_price
-            END
+            END AS sales_price
 
         FROM bronze.crm_sales_details;
 
@@ -249,20 +249,20 @@ BEGIN
             CASE
                 WHEN cid LIKE 'NAS%' THEN SUBSTRING(cid, 4, LEN(cid))
                 ELSE cid
-            END,
+            END AS cid,
 
             -- Remove future birthdates
             CASE
                 WHEN bdate > GETDATE() THEN NULL
                 ELSE bdate
-            END,
+            END AS bdate,
 
             -- Standardize gender values
             CASE
                 WHEN TRIM(UPPER(gen)) IN ('M', 'MALE') THEN 'Male'
                 WHEN TRIM(UPPER(gen)) IN ('F', 'FEMALE') THEN 'Female'
                 ELSE 'Unknown'
-            END
+            END AS gen
         FROM bronze.erp_cust_az12;
 
         SET @end_date = GETDATE();
@@ -285,7 +285,7 @@ BEGIN
             cntry
         )
         SELECT
-            REPLACE(cid, '-', ''),
+            REPLACE(cid, '-', '') AS cid,
 
             -- Standardize country names
             CASE
@@ -293,7 +293,7 @@ BEGIN
                 WHEN TRIM(UPPER(cntry)) = 'DE' THEN 'Germany'
                 WHEN TRIM(UPPER(cntry)) = '' OR cntry IS NULL THEN 'Unknown'
                 ELSE TRIM(cntry)
-            END
+            END AS cntry
         FROM bronze.erp_loc_a101;
 
         SET @end_date = GETDATE();
