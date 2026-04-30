@@ -53,7 +53,9 @@ SELECT
     cp.product_cost AS cost,
     cp.product_line,
     cp.product_start_date AS start_date,
-    ROW_NUMBER() OVER (ORDER BY cp.product_start_date, cp.product_id) AS product_key
+    ROW_NUMBER() OVER (
+        ORDER BY cp.product_start_date, cp.product_id
+    ) AS product_key
 FROM silver.crm_product_info AS cp
 LEFT JOIN silver.erp_px_cat_g1v2 AS ep
     ON cp.product_category_id = ep.id
