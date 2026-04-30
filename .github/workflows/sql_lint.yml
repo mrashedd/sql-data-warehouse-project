@@ -20,4 +20,4 @@ jobs:
 
       - name: Lint SQL Scripts
         # This checks all .sql files in your scripts folder
-        run: sqlfluff lint scripts/ --dialect ts_sql
+        run: sqlfluff lint scripts/ --dialect tsql
