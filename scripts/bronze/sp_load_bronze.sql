@@ -1,9 +1,9 @@
 /*
 Purpose:
-This stored procedure loads raw data into the Bronze layer of the data warehouse
-from external CSV files. It performs a full refresh by truncating existing tables
-and bulk inserting fresh data for CRM and ERP source systems, while logging load times
-and handling errors.
+This stored procedure loads raw data into the Bronze layer of the
+data warehouse from external CSV files. It performs a full refresh
+by truncating existing tables and bulk inserting fresh data for CRM
+and ERP source systems, while logging load times and handling errors.
 
 Parameters: None
 */
@@ -31,7 +31,7 @@ BEGIN
 
         PRINT ('>> Inserting Data into: bronze.crm_customer_info');
         BULK INSERT bronze.crm_customer_info
-        FROM 'D:\SQL 30 hours course\Data warehouse Project\sql-data-warehouse-project\datasets\source_crm\cust_info.csv'
+        FROM 'datasets\source_crm\cust_info.csv'
         WITH (
             FIRSTROW = 2,          -- Skip header row in CSV
             FIELDTERMINATOR = ',', -- Columns separated by comma
@@ -54,7 +54,7 @@ BEGIN
 
         PRINT ('>> Inserting Data into: bronze.crm_product_info');
         BULK INSERT bronze.crm_product_info
-        FROM 'D:\SQL 30 hours course\Data warehouse Project\sql-data-warehouse-project\datasets\source_crm\prd_info.csv'
+        FROM 'datasets\source_crm\prd_info.csv'
         WITH (
             FIRSTROW = 2,
             FIELDTERMINATOR = ',',
@@ -77,7 +77,7 @@ BEGIN
 
         PRINT ('>> Inserting Data into: bronze.crm_sales_details');
         BULK INSERT bronze.crm_sales_details
-        FROM 'D:\SQL 30 hours course\Data warehouse Project\sql-data-warehouse-project\datasets\source_crm\sales_details.csv'
+        FROM 'datasets\source_crm\sales_details.csv'
         WITH (
             FIRSTROW = 2,
             FIELDTERMINATOR = ',',
@@ -106,7 +106,7 @@ BEGIN
 
         PRINT ('>> Inserting Data into: bronze.erp_cust_az12');
         BULK INSERT bronze.erp_cust_az12
-        FROM 'D:\SQL 30 hours course\Data warehouse Project\sql-data-warehouse-project\datasets\source_erp\cust_az12.csv'
+        FROM 'datasets\source_erp\cust_az12.csv'
         WITH (
             FIRSTROW = 2,
             FIELDTERMINATOR = ',',
@@ -129,7 +129,7 @@ BEGIN
 
         PRINT ('>> Inserting Data into: bronze.erp_loc_a101');
         BULK INSERT bronze.erp_loc_a101
-        FROM 'D:\SQL 30 hours course\Data warehouse Project\sql-data-warehouse-project\datasets\source_erp\loc_a101.csv'
+        FROM 'datasets\source_erp\loc_a101.csv'
         WITH (
             FIRSTROW = 2,
             FIELDTERMINATOR = ',',
@@ -152,7 +152,7 @@ BEGIN
 
         PRINT ('>> Inserting Data into: bronze.erp_px_cat_g1v2');
         BULK INSERT bronze.erp_px_cat_g1v2
-        FROM 'D:\SQL 30 hours course\Data warehouse Project\sql-data-warehouse-project\datasets\source_erp\px_cat_g1v2.csv'
+        FROM 'datasets\source_erp\px_cat_g1v2.csv'
         WITH (
             FIRSTROW = 2,
             FIELDTERMINATOR = ',',
