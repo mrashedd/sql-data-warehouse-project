@@ -1,0 +1,23 @@
+name: SQL Linting
+
+on: [push, pull_request] # Runs whenever you push code
+
+jobs:
+  lint-sql:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: Install SQLFluff
+        run: pip install sqlfluff
+
+      - name: Lint SQL Scripts
+        # This checks all .sql files in your scripts folder
+        run: sqlfluff lint scripts/ --dialect ts_sql
