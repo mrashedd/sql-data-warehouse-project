@@ -1,8 +1,9 @@
 /*
 Purpose:
-This script ensures a clean setup of the 'data_warehouse' database by dropping it if it exists,
-then recreating it along with a layered architecture using three schemas: bronze, silver, and gold.
-This structure is commonly used in data warehousing for staging, transformation, and presentation layers.
+This script ensures a clean setup of the 'data_warehouse' database by dropping
+it if it exists, then recreating it along with a layered architecture using
+three schemas: bronze, silver, and gold. This structure is commonly used in
+data warehousing for staging, transformation, and presentation layers.
 */
 
 USE master;
