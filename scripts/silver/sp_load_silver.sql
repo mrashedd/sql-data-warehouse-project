@@ -1,8 +1,9 @@
 /*
 Purpose:
-This stored procedure loads the Silver layer of the data warehouse by transforming
-and cleaning raw data from the Bronze layer. It standardizes formats, removes duplicates,
-fixes invalid values, and ensures data consistency for downstream analytics.
+This stored procedure loads the Silver layer of the data warehouse
+by transforming and cleaning raw data from the Bronze layer.
+It standardizes formats, removes duplicates, fixes invalid values,and
+ensures data consistency for downstream analytics.
 
 The procedure processes both CRM and ERP datasets and logs execution time for each step.
 */
@@ -103,10 +104,15 @@ BEGIN
             product_id,
 
             -- Extract product key (remove prefix)
-            SUBSTRING(TRIM(product_key), 7, LEN(product_key)) AS product_key,
+            SUBSTRING(
+                TRIM(product_key), 7, LEN(product_key)
+            ) AS product_key,
 
             -- Derive category id from key
-            REPLACE(SUBSTRING(TRIM(product_key), 1, 5), '-', '_') AS product_category_id,
+            REPLACE(
+                SUBSTRING(TRIM(product_key), 1, 5),
+                '-', '_'
+            ) AS product_category_id,
 
             TRIM(product_name) AS product_name,
 
@@ -195,7 +201,7 @@ BEGIN
                     ) IS NOT NULL
                     THEN
                         TRY_CONVERT(DATE, CAST(sales_due_date AS VARCHAR(8)))
-            END as sales_due_date,
+            END AS sales_due_date,
 
             -- Fix inconsistent sales values
             CASE
