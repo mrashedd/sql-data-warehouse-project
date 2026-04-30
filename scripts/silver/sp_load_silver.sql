@@ -5,7 +5,8 @@ by transforming and cleaning raw data from the Bronze layer.
 It standardizes formats, removes duplicates, fixes invalid values,and
 ensures data consistency for downstream analytics.
 
-The procedure processes both CRM and ERP datasets and logs execution time for each step.
+The procedure processes both CRM and ERP datasets and logs execution time
+for each step.
 */
 
 CREATE OR ALTER PROCEDURE silver.load_silver_layer AS
