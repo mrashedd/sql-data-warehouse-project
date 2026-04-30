@@ -8,14 +8,18 @@ This structure is commonly used in data warehousing for staging, transformation,
 USE master;
 
 -- Check if the database already exists
-IF EXISTS (SELECT 1 FROM sys.databases WHERE name = 'data_warehouse')
-BEGIN
-    -- Force disconnect all users to allow safe deletion
-    ALTER DATABASE data_warehouse SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
+IF
+    EXISTS (
+        SELECT 1 FROM sys.databases
+        WHERE name = 'data_warehouse'
+    )
+    BEGIN
+        -- Force disconnect all users to allow safe deletion
+        ALTER DATABASE data_warehouse SET single_user WITH ROLLBACK IMMEDIATE;
 
-    -- Drop the existing database
-    DROP DATABASE data_warehouse;
-END;
+        -- Drop the existing database
+        DROP DATABASE data_warehouse;
+    END;
 GO
 
 -- Create a fresh database
